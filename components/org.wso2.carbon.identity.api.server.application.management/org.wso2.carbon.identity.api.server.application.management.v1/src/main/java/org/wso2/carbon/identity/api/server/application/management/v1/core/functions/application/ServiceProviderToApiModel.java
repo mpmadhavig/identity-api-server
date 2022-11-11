@@ -237,7 +237,13 @@ public class ServiceProviderToApiModel implements Function<ServiceProvider, Appl
                 .role(buildRoleConfig(application))
                 .subject(buildSubjectClaimConfig(application))
                 .requestedClaims(buildRequestedClaims(application))
-                .claimMappings(buildClaimMappings(application));
+                .claimMappings(buildClaimMappings(application))
+                .allAttributesAllowed(isAllAttributesAllowed(application));
+    }
+
+    private boolean isAllAttributesAllowed(ServiceProvider application) {
+
+        return application.getClaimConfig().isAllAttributesAllowed();
     }
 
     private List<ClaimMappings> buildClaimMappings(ServiceProvider application) {

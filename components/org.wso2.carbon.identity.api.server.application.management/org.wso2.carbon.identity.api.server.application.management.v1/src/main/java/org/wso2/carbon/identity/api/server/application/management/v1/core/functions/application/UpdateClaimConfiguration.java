@@ -52,6 +52,9 @@ public class UpdateClaimConfiguration implements UpdateFunction<ServiceProvider,
             applicationClaimConfiguration.setLocalClaimDialect(isLocalDialect(claimApiModel.getDialect()));
             // Requested claims / Claim mappings.
             applicationClaimConfiguration.setClaimMappings(getClaimMappings(claimApiModel));
+            // check the filtering method filterBasedOnlyOnScopesRequested
+            applicationClaimConfiguration.setAllAttributesAllowed(
+                    claimApiModel.isAllAttributesAllowed());
             // Role claim.
             updateRoleClaimConfigs(claimApiModel.getRole(), application);
             // Subject claim.

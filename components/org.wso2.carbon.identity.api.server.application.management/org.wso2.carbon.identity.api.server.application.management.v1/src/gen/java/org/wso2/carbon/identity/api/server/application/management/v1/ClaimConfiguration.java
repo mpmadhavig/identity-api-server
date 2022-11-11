@@ -17,63 +17,50 @@
 package org.wso2.carbon.identity.api.server.application.management.v1;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
 import java.util.List;
-import org.wso2.carbon.identity.api.server.application.management.v1.ClaimMappings;
-import org.wso2.carbon.identity.api.server.application.management.v1.RequestedClaimConfiguration;
-import org.wso2.carbon.identity.api.server.application.management.v1.RoleConfig;
-import org.wso2.carbon.identity.api.server.application.management.v1.SubjectConfig;
-import javax.validation.constraints.*;
 
-
-import io.swagger.annotations.*;
 import java.util.Objects;
 import javax.validation.Valid;
 import javax.xml.bind.annotation.*;
 
 public class ClaimConfiguration  {
-  
+    @XmlType(name="DialectEnum")
+    @XmlEnum(String.class)
+    public enum DialectEnum {
 
-@XmlType(name="DialectEnum")
-@XmlEnum(String.class)
-public enum DialectEnum {
+        @XmlEnumValue("CUSTOM") CUSTOM(String.valueOf("CUSTOM")), @XmlEnumValue("LOCAL") LOCAL(String.valueOf("LOCAL"));
 
-    @XmlEnumValue("CUSTOM") CUSTOM(String.valueOf("CUSTOM")), @XmlEnumValue("LOCAL") LOCAL(String.valueOf("LOCAL"));
+        private String value;
 
-
-    private String value;
-
-    DialectEnum(String v) {
-        value = v;
-    }
-
-    public String value() {
-        return value;
-    }
-
-    @Override
-    public String toString() {
-        return String.valueOf(value);
-    }
-
-    public static DialectEnum fromValue(String value) {
-        for (DialectEnum b : DialectEnum.values()) {
-            if (b.value.equals(value)) {
-                return b;
-            }
+        DialectEnum(String v) {
+            value = v;
         }
-        throw new IllegalArgumentException("Unexpected value '" + value + "'");
+
+        public String value() {
+            return value;
+        }
+
+        @Override
+        public String toString() {
+            return String.valueOf(value);
+        }
+
+        public static DialectEnum fromValue(String value) {
+            for (DialectEnum b : DialectEnum.values()) {
+                if (b.value.equals(value)) {
+                    return b;
+                }
+            }
+            throw new IllegalArgumentException("Unexpected value '" + value + "'");
+        }
     }
-}
 
     private DialectEnum dialect = DialectEnum.LOCAL;
     private List<ClaimMappings> claimMappings = null;
-
+    private boolean allAttributesAllowed;
     private List<RequestedClaimConfiguration> requestedClaims = null;
-
     private SubjectConfig subject;
     private RoleConfig role;
 
@@ -135,6 +122,7 @@ public enum DialectEnum {
     public List<RequestedClaimConfiguration> getRequestedClaims() {
         return requestedClaims;
     }
+
     public void setRequestedClaims(List<RequestedClaimConfiguration> requestedClaims) {
         this.requestedClaims = requestedClaims;
     }
@@ -183,7 +171,20 @@ public enum DialectEnum {
         this.role = role;
     }
 
+    /**
+     **/
+    public ClaimConfiguration allAttributesAllowed(boolean allAttributesAllowed) {
 
+        this.allAttributesAllowed = allAttributesAllowed;
+        return this;
+    }
+    @ApiModelProperty(value = "")
+    @JsonProperty("allAttributesAllowed")
+    @Valid
+    public boolean isAllAttributesAllowed() {
+
+        return allAttributesAllowed;
+    }
 
     @Override
     public boolean equals(java.lang.Object o) {
@@ -197,6 +198,8 @@ public enum DialectEnum {
         ClaimConfiguration claimConfiguration = (ClaimConfiguration) o;
         return Objects.equals(this.dialect, claimConfiguration.dialect) &&
             Objects.equals(this.claimMappings, claimConfiguration.claimMappings) &&
+            Objects.equals(
+                    this.allAttributesAllowed, claimConfiguration.allAttributesAllowed) &&
             Objects.equals(this.requestedClaims, claimConfiguration.requestedClaims) &&
             Objects.equals(this.subject, claimConfiguration.subject) &&
             Objects.equals(this.role, claimConfiguration.role);
@@ -204,7 +207,7 @@ public enum DialectEnum {
 
     @Override
     public int hashCode() {
-        return Objects.hash(dialect, claimMappings, requestedClaims, subject, role);
+        return Objects.hash(dialect, claimMappings, allAttributesAllowed, requestedClaims, subject, role);
     }
 
     @Override
@@ -215,6 +218,8 @@ public enum DialectEnum {
         
         sb.append("    dialect: ").append(toIndentedString(dialect)).append("\n");
         sb.append("    claimMappings: ").append(toIndentedString(claimMappings)).append("\n");
+        sb.append("    allAttributesAllowed: ")
+                .append(toIndentedString(allAttributesAllowed)).append("\n");
         sb.append("    requestedClaims: ").append(toIndentedString(requestedClaims)).append("\n");
         sb.append("    subject: ").append(toIndentedString(subject)).append("\n");
         sb.append("    role: ").append(toIndentedString(role)).append("\n");
