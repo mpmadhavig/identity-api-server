@@ -1,0 +1,462 @@
+openapi: 3.0.0
+info:
+  description: >
+    This document specifies an **Entitlements RESTful API** for **WSO2
+    Identity Server**.
+  version: "v1"
+  title: WSO2 Identity Server - Entitlements Rest API
+  termsOfService: 'http://swagger.io/terms/'
+  contact:
+    name: WSO2
+    url: 'http://wso2.com/products/identity-server/'
+    email: architecture@wso2.org
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+security:
+  - basicAuth: []
+  - oauth2: []
+tags:
+  - name: Policy Administration Point
+  - name: Policy Combining Algorithms
+paths:
+  /pap/policies:
+    get:
+      tags:
+        - Policy Administration Point
+      operationId: getAllPolicies
+      summary: |
+        List All Policies
+      description: |
+        This API provides the capability to retrieve the list of Policies available.<br>
+          <b>Permission required:</b> <br>
+              * /permission/admin/manage/identity/entitlementmgt/view <br>
+          <b>Scope required:</b> <br>
+              * internal_entitlement_mgt_view
+      parameters:
+        - $ref: '#/components/parameters/policyTypeFilter'
+        - $ref: '#/components/parameters/policySearchString'
+        - $ref: '#/components/parameters/pageNumber'
+        - $ref: '#/components/parameters/isPDPPolicy'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  policies:
+                    items:
+                      $ref: '#/components/schemas/PolicyDataModel'
+          description: A list of policies
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+
+    post:
+      summary: Create policy
+      tags:
+        - Policy Administration Point
+      description: |
+        This API provides the capability to create Policies.<br>
+          <b>Permission required:</b> <br>
+              * /permission/admin/manage/identity/entitlementmgt/create <br>
+          <b>Scope required:</b> <br>
+              * internal_entitlement_mgt_create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PolicyDataModel'
+      responses:
+        '201':
+          description: Policy created
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /pap/policies/{id}:
+    delete:
+      summary: Delete policy
+      tags:
+        - Policy Administration Point
+      description: |
+        This API provides the capability to delete a Policy.<br>
+          <b>Permission required:</b> <br>
+              * /permission/admin/manage/identity/entitlementmgt/delete <br>
+          <b>Scope required:</b> <br>
+              * internal_entitlement_mgt_delete
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Policy deleted
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '500':
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    get:
+      summary: Get policy by id
+      tags:
+        - Policy Administration Point
+      description: |
+        This API provides the capability to Get a Policy.<br>
+          <b>Permission required:</b> <br>
+              * /permission/admin/manage/identity/entitlementmgt/view <br>
+          <b>Scope required:</b> <br>
+              * internal_entitlement_mgt_view
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: version
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PolicyDataModel'
+          description: A policy object
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    patch:
+      summary: Update policy
+      tags:
+        - Policy Administration Point
+      description: |
+        This API provides the capability to Update a Policy.<br>
+          <b>Permission required:</b> <br>
+              * /permission/admin/manage/identity/entitlementmgt/update <br>
+          <b>Scope required:</b> <br>
+              * internal_entitlement_mgt_update
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PolicyDataModel'
+      responses:
+        '200':
+          description: Policy updated.
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /pap/combining-algorithm:
+    get:
+      summary: Get gloabl policy combining algorithm
+      tags:
+        - Policy Combining Algorithms
+      description: |
+        This API provides the capability to get the gloabl policy combining algorithm.<br>
+          <b>Permission required:</b> <br>
+              * /permission/admin/manage/identity/policycombiningalgorithm/view <br>
+          <b>Scope required:</b> <br>
+              * internal_entitlement_mgt_policy_comb
+      responses:
+        '200':
+          description: Policy combining algorithm is set.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/policyCombiningAlgorithmModel'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+
+    patch:
+      summary: Set policy combining algorithm
+      tags:
+        - Policy Combining Algorithms
+      description: |
+        This API provides the capability to set the policy combining algorithm.<br>
+          <b>Permission required:</b> <br>
+              * /permission/admin/manage/identity/policycombiningalgorithm/update <br>
+          <b>Scope required:</b> <br>
+              * internal_entitlement_mgt_policy_comb
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/policyCombiningAlgorithmModel'
+      responses:
+        '200':
+          description: Policy combining algorithm is set.
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+
+components:
+  parameters:
+    policyTypeFilter:
+      in: query
+      name: policy type
+      required: false
+      description: |
+        Policy Type filter
+      schema:
+        type: string
+        enum:
+          - ALL
+          - PDP_ENABLED
+          - PDP_DISABLED
+    policySearchString:
+      in: query
+      name: policy search string
+      required: false
+      description: |
+        Policy search string filter
+      schema:
+        type: string
+    pageNumber:
+      in: query
+      name: page number
+      required: false
+      description: |
+        Page Number filter
+      schema:
+        type: integer
+        default: 1
+        minimum: 1
+    isPDPPolicy:
+      in: query
+      name: is PDP Policy
+      required: true
+      description: |
+        Whether PDP Policy or PAP Policy
+      schema:
+        type: boolean
+        default: true
+  securitySchemes:
+    basicAuth:
+      scheme: basic
+      type: http
+    oauth2:
+      flows:
+        authorizationCode:
+          authorizationUrl: https://localhost:9443/oauth/authorize
+          scopes: {}
+          tokenUrl: https://localhost:9443/oauth/token
+      type: oauth2
+
+  schemas:
+    policyCombiningAlgorithmModel:
+      type: object
+      properties:
+        policyCombiningAlgorithm:
+          type: string
+
+    PolicyDataModel:
+      type: object
+      properties:
+        policies:
+          type: array
+          items:
+            $ref: '#/components/schemas/Policy'
+
+    Policy:
+      type: object
+      properties:
+        policy:
+          type: string
+        policyId:
+          type: string
+        active:
+          type: boolean
+        promote:
+          type: boolean
+        policyType:
+          type: string
+        policyEditor:
+          type: string
+        policyEditorData:
+          type: array
+          items:
+            type: string
+        policyOrder:
+          type: integer
+        version:
+          type: string
+        lastModifiedTime:
+          type: string
+        lastModifiedUser:
+          type: string
+        attributeDTOs:
+          type: array
+          items:
+            $ref: '#/components/schemas/AttributeDTOs'
+        policySetIdReferences:
+          type: array
+          items:
+            type: string
+        policyIdReferences:
+          type: array
+          items:
+            type: string
+
+    AttributeDTOs:
+      type: object
+      properties:
+        attributeValue:
+          type: string
+        attributeDataType:
+          type: string
+        attributeId:
+          type: string
+        attributeCategory:
+          type: string
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+          example: EXT-00000
+        message:
+          type: string
+          example: Some error message.
+        description:
+          type: string
+          example: Some error description.
+        traceId:
+          type: string
+          example: e0fbcfeb-3617-43c4-8dd0-7b7d38e13047
